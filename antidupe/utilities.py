@@ -71,7 +71,8 @@ def ssim(image_1: Image.Image, image_2: Image.Image, gpu: bool = False) -> float
     Calculates the SSIM between two images.
     """
     value = compare_ssim(image_1, image_2, GPU=gpu)
-    return value
+    value = np.round(value, 8)
+    return 1.0 - value
 
 
 def cosine_similarity(image_1: Image.Image, image_2: Image.Image, device: str = 'cpu') -> float:
