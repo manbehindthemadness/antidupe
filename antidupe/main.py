@@ -1,13 +1,15 @@
 """
 Main library.
 """
+from PIL import Image
 try:
     from utilities import (
         euclidean_distance,
         image_hash,
         ssim,
         cosine_similarity,
-        CNN
+        CNN,
+        resize_image,
     )
 except ImportError:
     from .utilities import (
@@ -15,7 +17,8 @@ except ImportError:
         image_hash,
         ssim,
         cosine_similarity,
-        CNN
+        CNN,
+        resize_image,
     )
 
 
@@ -52,14 +55,14 @@ class Antidupe:
         self.limits = limits
         return self
 
-    def predict(self, images: list) -> bool:
+    def predict(self, images: [list, tuple], size: int = 512) -> bool:
         """
         Lets measure our images.
         """
         switch = False
         if self.device != 'cpu':
             switch = True
-        im_1, im_2 = images
+        im_1, im_2 = resize_image(*images, size, show=self.debug)
         ed = euclidean_distance(im_1, im_2)
         self.d_print(f'euclidean distance detected: {ed}')
         if ed == 0.0:
@@ -87,3 +90,21 @@ class Antidupe:
                 self.d_print('cnn found duplicate')
                 return True
         return False
+
+    def test(self):
+        """
+        Tests the prediction logic.
+        """
+        self.debug = True
+        im_1 = Image.open('images/unique_1.jpg')
+        im_2 = Image.open('images/Bead_necklace_1.jpg')
+        im_3 = Image.open('images/Bead_necklace_2.jpg')
+        line = '------'
+        print('testing unique')
+        print(f"{line}duplicate? {self.predict((im_1, im_2))}")
+        print('testing duplicates resized')
+        print(f"{line}duplicate? {self.predict((im_2, im_3))}")
+        print('testing identical duplicates')
+        print(f"{line}duplicate? {self.predict((im_2, im_2))}")
+
+

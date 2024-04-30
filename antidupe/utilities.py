@@ -8,26 +8,88 @@ import torch
 from SSIM_PIL import compare_ssim
 from torchvision import transforms
 from efficientnet_pytorch import EfficientNet
+import matplotlib.pyplot as plt
 
 
-def resize_image(image, size: int = 100, channel_format: str = 'RGB') -> Image.Image:
+def plot_images(image1, image2):
     """
-    Resize the input image to 512x512 RGB if it's not already in the correct format.
+    Plot the input images side by side for comparison.
 
     Args:
-    - image: Input image in PIL or NumPy format.
+    - image1: First input image in PIL format.
+    - image2: Second input image in PIL format.
+    """
+    fig, axes = plt.subplots(1, 2, figsize=(10, 5))
+    axes[0].imshow(image1)
+    axes[0].set_title('Image 1')
+    axes[0].axis('off')
+    axes[1].imshow(image2)
+    axes[1].set_title('Image 2')
+    axes[1].axis('off')
+    plt.show()
+
+
+def resize_image(image1, image2, size: int = 100, channel_format: str = 'RGB', show: bool = False):
+    """
+    Resize two images to the specified size, maintaining aspect ratio and cropping to square if necessary.
+
+    Args:
+    - image1: First input image in PIL or NumPy format.
+    - image2: Second input image in PIL or NumPy format.
+    - size: Desired size for the square images.
+    - channel_format: Desired channel format ('RGB' or 'L' for grayscale).
 
     Returns:
-    - Resized image in PIL format.
+    - Resized and cropped versions of the input images.
     """
-    if isinstance(image, np.ndarray):
-        image = Image.fromarray(image)
-    if image.size == (size, size) and image.mode == channel_format:
-        return image
-    image = image.resize((size, size))
-    if image.mode != channel_format:
-        image = image.convert(channel_format)
-    return image
+    if isinstance(image1, np.ndarray):
+        image1 = Image.fromarray(image1)
+    if isinstance(image2, np.ndarray):
+        image2 = Image.fromarray(image2)
+
+    aspect_ratio_1 = image1.width / image1.height
+    aspect_ratio_2 = image2.width / image2.height
+
+    if abs(aspect_ratio_1 - aspect_ratio_2) < 1e-6:
+        image1 = resize_and_crop(image1, size, channel_format)
+        image2 = resize_and_crop(image2, size, channel_format)
+    else:
+        min_size = min(image1.width, image1.height, image2.width, image2.height)
+        image1 = resize_and_crop(image1, min_size, channel_format)
+        image2 = resize_and_crop(image2, min_size, channel_format)
+
+    if show:
+        plot_images(image1, image2)
+
+    return image1, image2
+
+
+def resize_and_crop(image, size, channel_format):
+    """
+    Resize the input image to a square of the specified size, cropping and centering if necessary.
+
+    Args:
+    - image: Input image in PIL format.
+    - size: Desired size for the square image.
+    - channel_format: Desired channel format ('RGB' or 'L' for grayscale).
+
+    Returns:
+    - Resized and cropped image in PIL format.
+    """
+    image.thumbnail((size, size))
+
+    if channel_format == 'RGB':
+        new_image = Image.new("RGB", (size, size), (255, 255, 255))
+    elif channel_format == 'L':
+        new_image = Image.new("L", (size, size), 255)
+    else:
+        raise ValueError("Unsupported channel format. Please use 'RGB' or 'L'.")
+
+    left = (size - image.width) // 2
+    top = (size - image.height) // 2
+    new_image.paste(image, (left, top))
+
+    return new_image
 
 
 def image_converter(image: [np.ndarray, Image.Image], size: int = 512, channel_format: str = 'RGB') -> Image.Image:
@@ -36,7 +98,11 @@ def image_converter(image: [np.ndarray, Image.Image], size: int = 512, channel_f
     """
     if isinstance(image, np.ndarray):
         image = Image.fromarray(image)
-    image = resize_image(image, size, channel_format)
+    if image.size == (size, size) and image.mode == channel_format:
+        return image
+    image = image.resize((size, size))
+    if image.mode != channel_format:
+        image = image.convert(channel_format)
     return image
 
 
