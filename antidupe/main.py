@@ -91,14 +91,17 @@ class Antidupe:
                 return True
         return False
 
-    def test(self):
+    def test(self, images: [list, tuple, None] = None):
         """
         Tests the prediction logic.
         """
         self.debug = True
-        im_1 = Image.open('images/unique_1.jpg')
-        im_2 = Image.open('images/Bead_necklace_1.jpg')
-        im_3 = Image.open('images/Bead_necklace_2.jpg')
+        if not images:
+            im_1 = Image.open('images/unique_1.jpg')
+            im_2 = Image.open('images/Bead_necklace_1.jpg')
+            im_3 = Image.open('images/Bead_necklace_2.jpg')
+        else:
+            im_1, im_2, im_3 = images
         line = '------'
         print('testing unique')
         print(f"{line}duplicate? {self.predict((im_1, im_2))}")
@@ -106,5 +109,4 @@ class Antidupe:
         print(f"{line}duplicate? {self.predict((im_2, im_3))}")
         print('testing identical duplicates')
         print(f"{line}duplicate? {self.predict((im_2, im_2))}")
-
-
+        self.debug = False
