@@ -7,6 +7,7 @@ except ImportError:
     from install_preserve import preserve  # noqa
 
 install_requires = [
+    'matplotlib',
     'imagehash',
     'efficientnet_pytorch',
     'numpy',
