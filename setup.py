@@ -7,6 +7,7 @@ except ImportError:
     from install_preserve import preserve  # noqa
 
 install_requires = [
+    'SSIM-PIL',
     'matplotlib',
     'imagehash',
     'efficientnet_pytorch',
@@ -30,7 +31,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='antidupe',
-    version='0.0.1',
+    version='0.0.2',
     packages=find_packages(),
     install_requires=install_requires,
     entry_points={
