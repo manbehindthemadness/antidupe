@@ -29,7 +29,7 @@ DEFAULTS = {
     'ssim': 0.15,
     'cs': 0.1,
     'cnn': 0.15,
-    'dedup': 0.85,
+    'dedup': 0.1,
 }
 
 

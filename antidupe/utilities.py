@@ -231,7 +231,8 @@ class ImageDeDup:
             min_similarity_threshold=threshold,
             scores=True
         )  # noqa
-        return similarity_score[1][0][1]
+        result = np.subtract(1.0, np.round(similarity_score[1][0][1], 4))
+        return result
 
 
 def test():
