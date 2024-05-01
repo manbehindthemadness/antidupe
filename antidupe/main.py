@@ -34,7 +34,8 @@ class Antidupe:
     """
     Discover duplicate images.
     """
-    def __init__(self, limits: dict = DEFAULTS, device: str = 'cpu', debug: bool = False):  # noqa
+    def __init__(self, limits: dict = DEFAULTS, device: str = 'cpu', debug: bool = False, show_plots: bool = False):  # noqa
+        self.show_plots = show_plots
         self.device = device
         self.limits = limits
         self.debug = debug
@@ -62,7 +63,7 @@ class Antidupe:
         switch = False
         if self.device != 'cpu':
             switch = True
-        im_1, im_2 = resize_image(*images, size, show=self.debug)
+        im_1, im_2 = resize_image(*images, size, show=self.show_plots)
         ed = euclidean_distance(im_1, im_2)
         self.d_print(f'euclidean distance detected: {ed}')
         if ed == 0.0:

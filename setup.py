@@ -31,7 +31,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='antidupe',
-    version='0.0.2',
+    version='0.0.3',
     packages=find_packages(),
     install_requires=install_requires,
     entry_points={
