@@ -44,8 +44,12 @@ def resize_image(image1, image2, size: int = 100, channel_format: str = 'RGB', s
     """
     if isinstance(image1, np.ndarray):
         image1 = Image.fromarray(image1)
+    else:
+        image1 = image1.copy()
     if isinstance(image2, np.ndarray):
         image2 = Image.fromarray(image2)
+    else:
+        image2 = image2.copy()
 
     aspect_ratio_1 = image1.width / image1.height
     aspect_ratio_2 = image2.width / image2.height
@@ -98,6 +102,8 @@ def image_converter(image: [np.ndarray, Image.Image], size: int = 512, channel_f
     """
     if isinstance(image, np.ndarray):
         image = Image.fromarray(image)
+    else:
+        image = image.copy()
     if image.size == (size, size) and image.mode == channel_format:
         return image
     image = image.resize((size, size))

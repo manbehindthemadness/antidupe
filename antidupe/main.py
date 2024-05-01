@@ -97,6 +97,7 @@ class Antidupe:
         Tests the prediction logic.
         """
         self.debug = True
+        self.show_plots = True
         if not images:
             im_1 = Image.open('images/unique_1.jpg')
             im_2 = Image.open('images/Bead_necklace_1.jpg')
@@ -111,3 +112,4 @@ class Antidupe:
         print('testing identical duplicates')
         print(f"{line}duplicate? {self.predict((im_2, im_2))}")
         self.debug = False
+        self.show_plots = False
