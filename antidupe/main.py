@@ -95,6 +95,7 @@ class Antidupe:
                 self.d_print('cnn found duplicate')
                 return True
             dedup = self.dedup.predict(im_1, im_2)
+            self.d_print(f'dedup detected: {dedup}')
             if dedup < self.limits['dedup']:
                 self.d_print('dedup found duplicate')
                 return True
