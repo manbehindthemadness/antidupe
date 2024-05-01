@@ -170,7 +170,7 @@ class CNN:
         self.model = EfficientNet.from_pretrained('efficientnet-b0')
         self.model.eval().to(self.device)
 
-    def cnn(self, image_1: Image.Image, image_2: Image.Image) -> float:
+    def predict(self, image_1: Image.Image, image_2: Image.Image) -> float:
         """
         Calculates the CNN similarity between two images.
         """
@@ -190,11 +190,56 @@ class CNN:
         return value / 1000
 
 
+class ImageDeDup:
+    """
+    Perform duplicate identifications using imagededup
+    """
+    def __init__(self, target_size: int = 512, grayscale: bool = True):
+        from imagededup.methods import CNN as CN  # noqa
+        from imagededup.utils import CustomModel  # noqa
+        from imagededup.utils.models import EfficientNet as EN  # noqa
+        from imagededup.utils.image_utils import preprocess_image  # noqa
+        self.cnn_encoder = CN()
+        self.prep = preprocess_image
+        self.target_size = target_size
+        self.grayscale = grayscale
+
+    def preprocess_image(self, image: Image.Image) -> np.ndarray:
+        """
+        Preps the image to gather encodings.
+        """
+        if image.mode != 'RGB':
+            image = image.convert('RGBA').convert('RGB')
+        image = self.prep(image, target_size=(self.target_size, self.target_size), grayscale=self.grayscale)
+        return image
+
+    def predict(self, image_1: Image.Image, image_2: Image.Image, threshold: float = 0.0):
+        """
+        Calculates the CNN similarity between two images.
+        """
+        image_1 = self.preprocess_image(image_1)
+        image_2 = self.preprocess_image(image_2)
+        embeddings1 = self.cnn_encoder.encode_image(image_array=image_1)
+        embeddings2 = self.cnn_encoder.encode_image(image_array=image_2)
+        embeddings_dict = {
+            1: embeddings1[0],
+            2: embeddings2[0]
+        }
+
+        similarity_score = self.cnn_encoder._find_duplicates_dict(  # noqa
+            embeddings_dict,  # noqa
+            min_similarity_threshold=threshold,
+            scores=True
+        )  # noqa
+        return similarity_score[1][0][1]
+
+
 def test():
     """
     This will test the various math functions
     """
     cnn = CNN()
+    dedup = ImageDeDup()
     print('resources loaded')
 
     image_unique = image_converter(Image.open('images/unique_1.jpg'))
@@ -225,8 +270,14 @@ def test():
     report += (f"cosine_similarity unique: {c_s_u}\ncosine_similarity duplicate size_difference: {c_s_d}\n"
                f"cosine_similarity identical: {c_s_d_d}\n")
 
-    c_n_u = cnn.cnn(image_unique, image_duplicate_1)
-    c_n_d = cnn.cnn(image_duplicate_1, image_duplicate_2)
-    c_n_d_d = cnn.cnn(image_duplicate_1, image_duplicate_1)
-    report += f"CNN unique: {c_n_u}\nCNN duplicate size_difference: {c_n_d}\nCNN identical: {c_n_d_d}"
+    c_n_u = cnn.predict(image_unique, image_duplicate_1)
+    c_n_d = cnn.predict(image_duplicate_1, image_duplicate_2)
+    c_n_d_d = cnn.predict(image_duplicate_1, image_duplicate_1)
+    report += f"CNN unique: {c_n_u}\nCNN duplicate size_difference: {c_n_d}\nCNN identical: {c_n_d_d}\n"
+
+    d_d_u = dedup.predict(image_unique, image_duplicate_1)
+    d_d_d = dedup.predict(image_duplicate_1, image_duplicate_2)
+    d_d_d_d = dedup.predict(image_duplicate_1, image_duplicate_1)
+    report += (f"dedup unique: {d_d_u}\ndedup duplicate size_difference: {d_d_d}\n"
+               f"dedup duplicate identical: {d_d_d_d}")
     print(report)

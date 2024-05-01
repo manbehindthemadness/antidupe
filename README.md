@@ -43,10 +43,11 @@ You can customize the similarity thresholds for each technique during runtime or
 ```python
 # Initialize Antidupe with custom thresholds
 custom_thresholds = {
-    'ih': 0.2,   # Image Hash
-    'ssim': 0.2, # SSIM
-    'cs': 0.2,   # Cosine Similarity
-    'cnn': 0.2   # CNN
+    'ih': 0.2,    # Image Hash
+    'ssim': 0.2,  # SSIM
+    'cs': 0.2,    # Cosine Similarity
+    'cnn': 0.2,   # CNN
+    'dedup': 0.85 # Mobilenet
 }
 antidupe = Antidupe(limits=custom_thresholds)
 
@@ -76,7 +77,8 @@ new_thresholds = {
     'ih': 0.1,
     'ssim': 0.1,
     'cs': 0.1,
-    'cnn': 0.1
+    'cnn': 0.1,
+    'dedup': 0.8
 }
 antidupe.set_limits(limits=new_thresholds)
 
@@ -87,12 +89,15 @@ is_duplicate = antidupe.predict([image1, image2])
 ## Requirements
 
 - Python 3.x
+- SSIM PIL
+- ImageDeDup
 - NumPy
+- MatPlotLib
 - Pillow
-- imagehash
-- torch
-- efficientnet_pytorch
-- torchvision
+- ImageHash
+- Torch
+- Efficientnet Pytorch
+- TorchVision
 
 ---
 
