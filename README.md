@@ -39,7 +39,7 @@ else:
 ### Customizing Thresholds
 
 You can customize the similarity thresholds for each technique during runtime or initialization:
-
+- *Note that negative values will disable the measurement layer.*
 ```python
 # Initialize Antidupe with custom thresholds
 custom_thresholds = {
@@ -47,7 +47,7 @@ custom_thresholds = {
     'ssim': 0.2,  # SSIM
     'cs': 0.2,    # Cosine Similarity
     'cnn': 0.2,   # CNN
-    'dedup': 0.85 # Mobilenet
+    'dedup': 0.1 # Mobilenet
 }
 antidupe = Antidupe(limits=custom_thresholds)
 
@@ -78,7 +78,7 @@ new_thresholds = {
     'ssim': 0.1,
     'cs': 0.1,
     'cnn': 0.1,
-    'dedup': 0.8
+    'dedup': 0.15
 }
 antidupe.set_limits(limits=new_thresholds)
 

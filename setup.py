@@ -32,7 +32,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='antidupe',
-    version='0.0.7',
+    version='0.0.8',
     packages=find_packages(),
     install_requires=install_requires,
     entry_points={

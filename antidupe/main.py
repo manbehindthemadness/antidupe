@@ -74,31 +74,36 @@ class Antidupe:
             self.d_print('euclidean distance found duplicate')
             return True
         else:
-            ih = image_hash(im_1, im_2)
-            self.d_print(f'image hash detected: {ih}')
-            if ih < self.limits['ih']:
-                self.d_print('image hash found duplicate')
-                return True
-            ss = ssim(im_1, im_2, switch)
-            self.d_print(f'ssim detected: {ss}')
-            if ss < self.limits['ssim']:
-                self.d_print('ssim found duplicate')
-                return True
-            cs = cosine_similarity(im_1, im_2, self.device)
-            self.d_print(f'cosine similarity detected: {cs}')
-            if cs < self.limits['cs']:
-                self.d_print('cosine similarity found duplicate')
-                return True
-            cnn = self.cnn.predict(im_1, im_2)
-            self.d_print(f'cnn detected: {cnn}')
-            if cnn < self.limits['cnn']:
-                self.d_print('cnn found duplicate')
-                return True
-            dedup = self.dedup.predict(im_1, im_2)
-            self.d_print(f'dedup detected: {dedup}')
-            if dedup < self.limits['dedup']:
-                self.d_print('dedup found duplicate')
-                return True
+            if self.limits['ih'] > 0:
+                ih = image_hash(im_1, im_2)
+                self.d_print(f'image hash detected: {ih}')
+                if ih < self.limits['ih']:
+                    self.d_print('image hash found duplicate')
+                    return True
+            if self.limits['ssim'] > 0:
+                ss = ssim(im_1, im_2, switch)
+                self.d_print(f'ssim detected: {ss}')
+                if ss < self.limits['ssim']:
+                    self.d_print('ssim found duplicate')
+                    return True
+            if self.limits['cs'] > 0:
+                cs = cosine_similarity(im_1, im_2, self.device)
+                self.d_print(f'cosine similarity detected: {cs}')
+                if cs < self.limits['cs']:
+                    self.d_print('cosine similarity found duplicate')
+                    return True
+            if self.limits['cnn'] > 0:
+                cnn = self.cnn.predict(im_1, im_2)
+                self.d_print(f'cnn detected: {cnn}')
+                if cnn < self.limits['cnn']:
+                    self.d_print('cnn found duplicate')
+                    return True
+            if self.limits['dedup'] > 0:
+                dedup = self.dedup.predict(im_1, im_2)
+                self.d_print(f'dedup detected: {dedup}')
+                if dedup < self.limits['dedup']:
+                    self.d_print('dedup found duplicate')
+                    return True
         return False
 
     def test(self, images: [list, tuple, None] = None):
